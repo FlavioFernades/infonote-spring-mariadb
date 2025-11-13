@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Login - InfoNote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background: white;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 320px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 1em;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 1em;
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>InfoNote</h2>
+        <form id="loginForm">
+            <label>Usuário:
+                <input type="text" name="username" required>
+            </label>
+            <label>Senha:
+                <input type="password" name="password" required>
+            </label>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+    document.querySelector("#loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = new URLSearchParams(new FormData(form));
+        
+        try {
+            const response = await fetch("/auth/login", {
+                method: "POST",
+                body: data
+            });
+
+            if (response.ok) {
+                const role = await response.text();
+                console.log("Login bem-sucedido. Papel:", role);
+                
+                if (role === "ROLE_ADMIN") {
+                    window.location.href = "/index.html";
+                } else {
+                    window.location.href = "/teste.html";
+                }
+            } else {
+                document.getElementById("error").innerText = "Usuário ou senha inválidos!";
+            }
+        } catch (err) {
+            document.getElementById("error").innerText = "Erro de conexão com o servidor.";
+            console.error(err);
+        }
+    });
+    </script>
+</body>
+</html>
